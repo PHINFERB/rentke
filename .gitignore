@@ -1,0 +1,17 @@
+# Python ignores 
+__pycache__/ 
+*.sqlite3 
+# Django/Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+venv/
+.venv/
+.env
+
+# Frontend (if any)
+node_modules/
+dist/
+
+# System
+.DS_Store
