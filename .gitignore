@@ -1,17 +1,32 @@
-# Python ignores 
-__pycache__/ 
-*.sqlite3 
-# Django/Python
+# Python/Django
 __pycache__/
 *.py[cod]
 *.sqlite3
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
 venv/
 .venv/
+env/
+
+# Environment files
 .env
+.env.local
+.env.prod
+secrets.json
+
+# Django
+/media/
+/staticfiles/
 
 # Frontend (if any)
 node_modules/
 dist/
+build/
+.next/
+out/
 
 # System
 .DS_Store
