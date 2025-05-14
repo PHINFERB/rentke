@@ -5,21 +5,26 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+/media/
+/staticfiles/
 
 # Virtual environments
 venv/
 .venv/
 env/
-
+.env
+.env.local
+.env.prod
+.env.dev
+.env.test
+secrets.json
+*.env
+.env*.local
 # Environment files
 .env
 .env.local
 .env.prod
 secrets.json
-
-# Django
-/media/
-/staticfiles/
 
 # Frontend (if any)
 node_modules/
