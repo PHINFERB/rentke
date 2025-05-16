@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from . import views 
+from listings import views 
 
 from django.contrib import admin
 from django.urls import path, include
@@ -32,6 +32,7 @@ urlpatterns = [
     path('admin/', admin.site.urls), 
     # API endpoints for listings
     path('api/', include('listings.urls')), 
+    path('api/listings/', views.listings_api, name='listings-api'),
 ]
 
 if settings.DEBUG:

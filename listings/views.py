@@ -9,7 +9,11 @@ from .serializers import PropertySerializer
 from .pagination import PropertyPagination
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.permissions import IsAuthenticated
+from django.http import HttpResponse
+from django.http import JsonResponse
 
+def rentke_view(request):
+    return HttpResponse("WELCOME TO RENTKE API.")
 # Traditional Django view
 def my_view(request):
     properties = Property.objects.all()
@@ -35,9 +39,20 @@ def get_queryset(self):
         if city:
             queryset = queryset.filter(city__iexact=city)
         return queryset
-
+# def create view
 def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+# API view for listings
+def listings_api(request):
+    data = {
+        "message": "You are the best",
+        "listings": [
+            {"id": 1, "title": "Sample Listing 1"},
+            {"id": 2, "title": "Sample Listing 2"}
+        ]
+    }
+    return JsonResponse(data)
 
 # Property List and Create View
 class PropertyDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -45,15 +60,11 @@ class PropertyDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PropertySerializer
     permission_classes = [IsOwnerOrReadOnly]
 
-from django.http import HttpResponse
+
 
 # Basic Views
 def home(request):
     return HttpResponse("API Working Properly")
-
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.reverse import reverse
 
 @api_view(['GET'])
 def api_root(request, format=None):

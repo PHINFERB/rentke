@@ -1,11 +1,11 @@
 from django.urls import path
 from .views import PropertyListCreateView
-from django.urls import path
 from .views import(
     PropertyListCreateView,
     PropertyDetailView,
     api_root,
-    home)
+    home, 
+    rentke_view)
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.views.generic.base import RedirectView
 
@@ -13,6 +13,7 @@ from django.views.generic.base import RedirectView
 urlpatterns = [
     path('', home, name='home'),
     path('api/', api_root, name='api-root'),
+    path('rentke/', rentke_view, name='rentke'),
     path('api/properties/', PropertyListCreateView.as_view(), name='property-list'),
     path('api/properties/<int:pk>/', PropertyDetailView.as_view(), name='property-detail'),
    path('properties/', PropertyListCreateView.as_view(), name='property-list'),
