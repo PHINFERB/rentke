@@ -8,9 +8,11 @@ from rest_framework import viewsets
 from .serializers import PropertySerializer
 from .pagination import PropertyPagination
 from .permissions import IsOwnerOrReadOnly
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.http import HttpResponse
 from django.http import JsonResponse
+
+
 
 def rentke_view(request):
     return HttpResponse("WELCOME TO RENTKE API.")
@@ -25,12 +27,12 @@ class PropertyViewSet(viewsets.ModelViewSet):
     queryset = Property.objects.all().order_by('id')
     serializer_class = PropertySerializer
     pagination_class = PropertyPagination
-    permission_classes = [IsOwnerOrReadOnly,IsAuthenticated]
+    permission_classes = [IsOwnerOrReadOnly,IsAuthenticatedOrReadOnly]
     
 class PropertyListCreateView(generics.ListCreateAPIView):
     queryset = Property.objects.all()
     serializer_class = PropertySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 def get_queryset(self):
@@ -59,6 +61,14 @@ class PropertyDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Property.objects.all()
     serializer_class = PropertySerializer
     permission_classes = [IsOwnerOrReadOnly]
+
+class PublicPropertyListView(generics.ListAPIView):
+    queryset = Property.objects.all()
+    serializer_class = PropertySerializer
+    permission_classes = []
+
+    def get_queryset(self):
+        return super().get_queryset().filter(is_public=True)
 
 
 

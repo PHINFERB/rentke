@@ -1,44 +1,50 @@
 import React, { useEffect, useState } from 'react';
 
 function App() {
-  const [listings, setListings] = useState([]); // State to store fetched data
+  const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   useEffect(() => {
-    fetch('http://localhost:8000/api/listings/')  // Django API endpoint
-      .then(res => {
-        if (!res.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return res.json();
-      })
-      .then(data => {
-        const listingsArry = Array.isArray(data) ? data : data.listings || [];
-        setListings(data.listings || []);
-        setError(null);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        setError(error.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []); // Empty dependency array = runs once on mount
+    fetch('http://localhost:8000/api/public/', {
+      headers: {
+        'Content-Type': 'application/json',
+        // Add if using authentication:
+        // 'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+      }
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('Network response was not ok');
+      return res.json();
+    })
+    .then(data => {
+      // Handle both array and object responses
+      const receivedListings = Array.isArray(data) ? data : data.listings || [];
+      setListings(receivedListings);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      setError(error.message);
+    })
+    .finally(() => setLoading(false));
+  }, []);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
-  if (!listings.length) return <div>No listings found</div>;
 
   return (
     <div>
       <h1>Listings</h1>
-      {listings.map(listing => (
-        <div key={listing.id}>
-          <h2>{listing.title}</h2>
-          <p>{listing.description || 'No description available'}</p>
-        </div>
-      ))}
+      {listings.length > 0 ? (
+        listings.map(listing => (
+          <div key={listing.id}>
+            <h2>{listing.title}</h2>
+            <p>{listing.description || 'No description available'}</p>
+          </div>
+        ))
+      ) : (
+        <div>No listings found</div>
+      )}
     </div>
   );
 }
