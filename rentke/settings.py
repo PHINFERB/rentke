@@ -131,16 +131,19 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'PAGE_SIZE_QUERY_PARAM': 'size',
     'MAX_PAGE_SIZE': 100,
+    # Default authentication classes
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
+    # Default renderer classes
      'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
     ],
+    # Default permission classes
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
@@ -179,7 +182,7 @@ if DEBUG:
     CSRF_TRUSTED_ORIGINS = []  # Add your trusted origins here
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'     # Disables HTTPS requirements
 
-    SWAGGER_SETTINGS = {
+SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
         'Bearer': {
             'type': 'apiKey',

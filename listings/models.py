@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator
-from django.contrib.auth.models import User
 
 
 class User(AbstractUser):
@@ -11,13 +10,15 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+    
 class Property(models.Model):
+    is_public = models.BooleanField(default=True)
     # Basic Info
     title = models.CharField(max_length=200)
     description = models.TextField()
     price = models.IntegerField(validators=[MinValueValidator(1)])
     owner = models.ForeignKey( 
-        User, 
+        'User', 
         on_delete=models.CASCADE,
         related_name='properties',
         null=True,
@@ -52,10 +53,7 @@ class Property(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f"{self.title} - KSh {self.price}"
-    def __str__(self):
-        return f"{self.title} (Owned by: {self.owner.username})"
-
+#     def get_absolute_url(self):
+#         return reverse('property_detail', kwargs={'pk': self.pk})
     class Meta:
         verbose_name_plural = "Properties"
