@@ -1,22 +1,30 @@
-from django.shortcuts import render
-from rest_framework import generics
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import AllowAny
+from rest_framework.generics import ListAPIView
 from rest_framework.decorators import api_view
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from rest_framework.reverse import reverse
-from .models import Property
-from rest_framework import viewsets
 from .serializers import PropertySerializer
+from rest_framework.reverse import reverse
 from .pagination import PropertyPagination
-from .permissions import IsOwnerOrReadOnly
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework import permissions
 from django.http import HttpResponse
 from django.http import JsonResponse
+from django.shortcuts import render
+from rest_framework import generics
+from rest_framework import viewsets
+from .permissions import IsOwner
 from django.db.models import Q
-from rest_framework.generics import ListAPIView
+from .models import Property
+
+class PropertyListView(generics.ListAPIView):
+    #API endpoint that allows properties to be viewed or filtered."""
+    queryset = Property.objects.all()
 
 class UserPropertiesView(generics.ListAPIView):
     serializer_class = PropertySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     pagination_class = PropertyPagination
     def get_queryset(self):
         return Property.objects.filter(owner=self.request.user)
@@ -51,7 +59,7 @@ class PropertyViewSet(viewsets.ModelViewSet):
     queryset = Property.objects.all().order_by('id')
     serializer_class = PropertySerializer
     pagination_class = PropertyPagination
-    permission_classes = [IsOwnerOrReadOnly,IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     
 class PropertyListCreateView(generics.ListCreateAPIView):
     queryset = Property.objects.all().order_by('-created_at')
@@ -90,7 +98,16 @@ def listings_api(request):
 class PropertyDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Property.objects.all()
     serializer_class = PropertySerializer
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+#
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        return get_object_or_404(queryset, pk=self.kwargs['pk'])
+    # For owner-only access:
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'DELETE']:
+            return [permissions.IsAuthenticated(), IsOwner()]
+        return super().get_permissions()
 
 class PublicPropertyListView(generics.ListAPIView):
     queryset = Property.objects.all()
@@ -111,14 +128,27 @@ def home(request):
 def api_root(request, format=None):
     return Response({
         'properties': reverse('property-list', request=request, format=format),
-        'admin': reverse('admin:index', request=request)
-    })
-@api_view(['GET'])
-def api_root(request, format=None):
-    return Response({
-        'properties': reverse('property-list', request=request, format=format),
         'user-properties': reverse('user-properties', request=request, format=format),
         'search': reverse('property-search', request=request, format=format),
         'public-listings': reverse('public-listings', request=request, format=format),
         'admin': reverse('admin:index', request=request)
     })
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def custom_login(request):
+    """
+    Custom login view that returns a welcome message.
+    """
+    username = request.data.get('username')
+    password = request.data.get('password')
+    
+    if username and password:
+        return Response({"message": f"Welcome {username}!"})
+    else:
+        return Response({"error": "Username and password are required."}, status=400)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_csrf_token(request):
+    return Response({'detail': 'CSRF cookie set'})

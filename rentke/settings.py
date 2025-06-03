@@ -5,7 +5,8 @@ from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponsePermanentRedirect
 from datetime import timedelta
 HttpResponsePermanentRedirect.http_method_safe = False
-
+from dotenv import load_dotenv
+load_dotenv()
 # Load environment variables from .env file
 load_dotenv()
 
@@ -21,7 +22,7 @@ def get_env_variable(var_name):
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_env_variable('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 # ALLOWED_HOSTS

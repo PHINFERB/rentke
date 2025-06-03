@@ -1,9 +1,21 @@
+import { AuthProvider } from './auth/AuthContext';
+import ReactDOM from 'react-dom/client';
 import React from 'react';
 import axios from 'axios';
-import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+
+ReactDOM.render(
+  <React.StrictMode>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  </React.StrictMode>,
+  document.getElementById('root')
+);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

@@ -12,6 +12,14 @@ class User(AbstractUser):
         return self.username
     
 class Property(models.Model):
+
+    # Represents a rental property listing.
+    # Attributes:
+    #   title (str): Name of the property
+    #   price (int): Monthly rent in KSh
+    #   owner (User): User who created the listing
+    #   is_public (bool): Whether the listing is public or private
+
     is_public = models.BooleanField(default=True)
     # Basic Info
     title = models.CharField(max_length=200)
@@ -24,9 +32,10 @@ class Property(models.Model):
         null=True,
         blank=True
     )
+
     class Meta:
         ordering = ['id']
-    
+
     # Location
     address = models.CharField(max_length=255, blank=True, null=True)
     city = models.CharField(max_length=100, default="Nairobi")
@@ -53,7 +62,8 @@ class Property(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-#     def get_absolute_url(self):
-#         return reverse('property_detail', kwargs={'pk': self.pk})
+    # def get_absolute_url(self):
+    #     return reverse('property_detail', kwargs={'pk': self.pk})
+
     class Meta:
         verbose_name_plural = "Properties"
