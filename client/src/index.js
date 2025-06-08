@@ -1,34 +1,31 @@
-import { AuthProvider } from './auth/AuthContext';
-import ReactDOM from 'react-dom/client';
-import React from 'react';
-import axios from 'axios';
-import './index.css';
+import reportWebVitals from './reportWebVitals';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './theme';
 import App from './App';
+import './index.css';
+import axios from 'axios';
 
-axios.defaults.xsrfCookieName = 'csrftoken'
-axios.defaults.xsrfHeaderName = 'X-CSRFToken'
-
-ReactDOM.render(
-  <React.StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
-);
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <StrictMode>
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
+  </StrictMode>
 );
+
+// Call reportWebVitals right after the root.render
+reportWebVitals();
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api',
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
 // Add JWT auth interceptor
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('access_token');
@@ -36,7 +33,8 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
-  });
+});
+
 // Add response interceptor to handle token refresh
 api.interceptors.response.use(
   (response) => response,
@@ -60,9 +58,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
